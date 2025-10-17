@@ -26,7 +26,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // Login
-router.post('/auth/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
