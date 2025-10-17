@@ -15,34 +15,9 @@ const app = express();
 
 // --- Middleware Setup ---
 
-// MODIFIED: More robust CORS configuration to handle potential trailing slashes
-// and provide better debugging.
-const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    'http://localhost:5173'
-].filter(Boolean); // Removes any falsy values if FRONTEND_URL is not set
-
+// Configure CORS with options
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Log incoming requests for easier debugging
-    console.log("CORS Check: Request from origin ->", origin);
-
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    // Check if the origin is in the allowed list, ignoring any trailing slashes
-    const isAllowed = allowedOrigins.some(allowed => {
-        const normalizedAllowed = allowed.endsWith('/') ? allowed.slice(0, -1) : allowed;
-        const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
-        return normalizedAllowed === normalizedOrigin;
-    });
-
-    if (isAllowed) {
-        return callback(null, true);
-    } else {
-        return callback(new Error(`Origin '${origin}' not allowed by CORS policy.`));
-    }
-  },
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Frontend URL from env vars
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -96,4 +71,3 @@ mongoose.connect(process.env.MONGO_URI)
     console.error("Failed to connect to MongoDB", err);
     process.exit(1); // Exit the process if DB connection fails
   });
-
